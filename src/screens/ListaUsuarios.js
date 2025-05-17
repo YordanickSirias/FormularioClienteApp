@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import IconMC from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const ListaUsuarios = ({ navigation }) => {
   const [usuarios, setUsuarios] = useState([]);
@@ -8,10 +9,9 @@ const ListaUsuarios = ({ navigation }) => {
   const irAFormulario = () => {
     navigation.navigate('Home', {
       onGuardarUsuario: (nuevoUsuario) => {
-        // Modificado para guardar solo la fecha sin hora
         const usuarioSinHora = {
           ...nuevoUsuario,
-          fechaRegistro: new Date().toLocaleDateString() // Solo fecha
+          fechaRegistro: new Date().toLocaleDateString()
         };
         setUsuarios([...usuarios, usuarioSinHora]);
       }
@@ -39,20 +39,22 @@ const ListaUsuarios = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.botonAgregar}
-        onPress={irAFormulario}
-      >
-        <Icon name="add" size={24} color="white" />
-        <Text style={styles.textoBoton}>Agregar Cliente</Text>
-      </TouchableOpacity>
+      {/* Header con solo el icono a la derecha */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={irAFormulario} style={styles.iconoHeader}>
+          <IconMC name="account-plus" size={28} color="#3498db" />
+        </TouchableOpacity>
+      </View>
 
       <FlatList
         data={usuarios}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listaContenido}
+        contentContainerStyle={usuarios.length === 0 ? styles.listaVaciaContenido : styles.listaContenido}
         ListEmptyComponent={
-          <Text style={styles.listaVacia}>No hay clientes registrados</Text>
+          <View style={styles.contenedorVacio}>
+            <Icon name="people-outline" size={80} color="#bdc3c7" style={styles.iconoVacio} />
+            <Text style={styles.textoVacio}>No hay clientes registrados aún</Text>
+          </View>
         }
         renderItem={({ item }) => (
           <View style={styles.item}>
@@ -80,31 +82,41 @@ const ListaUsuarios = ({ navigation }) => {
   );
 };
 
-// Los estilos se mantienen exactamente igual que en tu versión original
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f8f9fa',
-    padding: 16,
   },
-  botonAgregar: {
+  header: {
     flexDirection: 'row',
-    backgroundColor: '#3498db',
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 16,
-    elevation: 3,
+    justifyContent: 'flex-end',
+    padding: 16,
+    paddingTop: 10,
+    backgroundColor: 'white',
   },
-  textoBoton: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginLeft: 8,
+  iconoHeader: {
+    padding: 8,
   },
   listaContenido: {
-    paddingBottom: 20,
+    padding: 16,
+  },
+  listaVaciaContenido: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  contenedorVacio: {
+    alignItems: 'center',
+  },
+  iconoVacio: {
+    marginBottom: 20,
+    opacity: 0.5,
+  },
+  textoVacio: {
+    fontSize: 16,
+    color: '#7f8c8d',
+    textAlign: 'center',
   },
   item: {
     backgroundColor: 'white',
@@ -114,6 +126,7 @@ const styles = StyleSheet.create({
     elevation: 2,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginHorizontal: 16,
   },
   contenidoItem: {
     flex: 1,
@@ -128,12 +141,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#7f8c8d',
     marginBottom: 2,
-  },
-  listaVacia: {
-    textAlign: 'center',
-    marginTop: 32,
-    color: '#95a5a6',
-    fontSize: 16,
   },
   botonEliminar: {
     marginLeft: 10,
